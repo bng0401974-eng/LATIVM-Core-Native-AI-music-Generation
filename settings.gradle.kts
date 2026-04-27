@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LATIVM-Core-Native-AI-music-Generation"
 include(":app")
-include(":AI-music-Generation158156")
+include(":LATIVM-Core-Native-AI-music-Generation")

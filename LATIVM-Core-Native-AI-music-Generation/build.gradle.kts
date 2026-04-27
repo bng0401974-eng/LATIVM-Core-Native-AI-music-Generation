@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.lativm_native_ai_music_generation145645"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24

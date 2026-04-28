@@ -17,13 +17,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
-    // Инстанцирање на ViewModel
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Користиме стандарден MaterialTheme бидејќи специфичната тема не е пронајдена
             MaterialTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -59,7 +57,7 @@ fun PulseAnimation() {
 
 @Composable
 fun MusicGeneratorScreen(viewModel: MainViewModel) {
-    var promptText by remember { mutableStateOf("") }
+    // Ги користиме вредностите директно од ViewModel
     val uiState by viewModel.uiState.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val context = LocalContext.current
@@ -71,27 +69,35 @@ fun MusicGeneratorScreen(viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(
-            value = promptText,
-            onValueChange = { promptText = it },
+        // ТЕКСТ ПОЛЕ ПОВРЗАНО СО VIEWMODEL
+        OutlinedTextField(
+            value = viewModel.userPrompt,
+            onValueChange = { viewModel.onPromptChange(it) },
             label = { Text("Внеси опис за музика (пр. Lo-Fi Hip Hop)") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState !is UiState.Loading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // КОПЧЕ СО ЕДЕН АРГУМЕНТ (ПОПРАВЕНО)
         Button(
-            onClick = { viewModel.generateMusic(context, promptText) },
-            enabled = uiState !is UiState.Loading && promptText.isNotBlank()
+            onClick = { viewModel.generateMusic(context) },
+            enabled = uiState !is UiState.Loading && viewModel.userPrompt.isNotBlank()
         ) {
             Text("Генерирај Беат")
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Приказ на состојбата
         when (val state = uiState) {
-            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Loading -> {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Машината рендира...")
+                }
+            }
             is UiState.Success -> {
                 Card(
                     modifier = Modifier.padding(16.dp),
@@ -125,7 +131,7 @@ fun MusicGeneratorScreen(viewModel: MainViewModel) {
                 Text("Грешка: ${state.message}", color = MaterialTheme.colorScheme.error)
             }
             is UiState.Idle -> {
-                Text("Внеси нешто и притисни на копчето.")
+                Text("Внеси инструкција и притисни на копчето.")
             }
         }
     }

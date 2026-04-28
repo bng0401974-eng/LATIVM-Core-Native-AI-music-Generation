@@ -1,12 +1,11 @@
-package com.lativm_native_ai_music_generation145645.repository
+package com.lativm_core_native_ai_music_generation145645.repository
 
-import com.lativm_native_ai_music_generation145645.network.RetrofitClient
+import com.lativm_core_native_ai_music_generation145645.network.RetrofitClient
+import com.lativm_core_native_ai_music_generation145645.network.GradioRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
-import org.json.JSONObject
+import android.util.Log
 
 class MusicRepository {
     private val apiService = RetrofitClient.instance
@@ -14,16 +13,26 @@ class MusicRepository {
     suspend fun getGeneratedMusic(prompt: String): Result<ResponseBody> {
         return withContext(Dispatchers.IO) {
             try {
-                val json = JSONObject()
-                json.put("inputs", prompt)
-                val requestBody = json.toString().toRequestBody("application/json".toMediaType())
+                // МОРА да ги пратиш сите 3 параметри што ги бара Python функцијата:
+                // 1. prompt (String)
+                // 2. duration (Number - во Python е default 10)
+                // 3. loop_mode (String - "Normal" или "Loop Ready (Seamless)")
 
-                val response = apiService.generateMusic(
-                    RetrofitClient.MODEL_ID,
-                    RetrofitClient.HF_TOKEN,
-                    requestBody
+                // Во MusicRepository.kt
+                // ВО MusicRepository.kt - Мора да има 3 елементи во листата!
+                val request = GradioRequest(
+                    data = listOf(
+                        prompt,      // 1. Text input
+                        15,          // 2. Duration (Slider)
+                        "Normal"     // 3. Loop Mode (Radio)
+                    )
                 )
-                Result.success(response)
+
+                val responseBody = apiService.generateMusic(
+                    RetrofitClient.HF_TOKEN,
+                    request
+                )
+                Result.success(responseBody)
             } catch (e: Exception) {
                 Result.failure(e)
             }

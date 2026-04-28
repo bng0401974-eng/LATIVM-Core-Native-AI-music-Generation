@@ -6,9 +6,19 @@ import java.io.File
 import java.io.FileOutputStream
 
 object FileUtils {
+    /**
+     * Saves the audio response body to a temporary WAV file in the cache directory.
+     */
     fun saveAudioToFile(context: Context, body: ResponseBody): String? {
         return try {
-            val file = File(context.cacheDir, "generated_music.mp3")
+            // Using temp_audio.wav as requested
+            val file = File(context.cacheDir, "temp_audio.wav")
+            
+            // Delete old file if exists to avoid playing old data
+            if (file.exists()) {
+                file.delete()
+            }
+
             val inputStream = body.byteStream()
             val outputStream = FileOutputStream(file)
             

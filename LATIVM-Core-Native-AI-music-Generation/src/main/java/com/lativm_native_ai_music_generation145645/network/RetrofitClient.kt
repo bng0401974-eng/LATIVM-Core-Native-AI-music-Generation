@@ -8,6 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+    // Во RetrofitClient.kt
     private const val BASE_URL = "https://dame1612-lativm-facebook-medium.hf.space/"
 
     val HF_TOKEN = "Bearer ${BuildConfig.HF_TOKEN}"

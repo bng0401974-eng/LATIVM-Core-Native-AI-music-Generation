@@ -6,9 +6,12 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface LativmApiService {
+    // Пробај со /api/predict/ - ова е најстандардниот fallback за Gradio 4.x+
     @POST("run/predict")
     suspend fun generateMusic(
         @Header("Authorization") token: String,
         @Body request: GradioRequest
     ): ResponseBody
+
+
 }
